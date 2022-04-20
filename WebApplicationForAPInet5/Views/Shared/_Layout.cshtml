@@ -148,7 +148,10 @@
     <div class="container body-content">
     @RenderBody()
     <hr />
-    <footer><p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+    <footer>
+        <h3>@User.Identity.Name</h3> <br /> 
+        <a asp-controller="Account" asp-action="Signout" asp-area="MicrosoftIdentity">Signout</a>
+        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
     </footer>
 </div>
     <script type="text/javascript" src="./js/site.js"></script>

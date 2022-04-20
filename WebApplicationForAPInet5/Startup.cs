@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using WebApplicationForAPInet5.Models;
+using Microsoft.EntityFrameworkCore;
+using WebApplicationForAPInet5.Data;
 
 namespace WebApplicationForAPInet5
 {
@@ -41,6 +43,17 @@ namespace WebApplicationForAPInet5
                       .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
                       .AddInMemoryTokenCaches();
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policy =>
+                    {
+                        policy.WithOrigins("http://127.0.0.1:5501")
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
+
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -48,6 +61,10 @@ namespace WebApplicationForAPInet5
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            services.AddDbContext<FileStoreDBContext>(item =>
+
+                item.UseSqlServer(Configuration.GetConnectionString("DefaultConnect")));
 
             // Enables a UI and controller for sign in and sign out.
             services.AddRazorPages()
@@ -71,6 +88,8 @@ namespace WebApplicationForAPInet5
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthentication();
 
