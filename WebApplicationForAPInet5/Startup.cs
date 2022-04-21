@@ -48,9 +48,9 @@ namespace WebApplicationForAPInet5
                 options.AddDefaultPolicy(
                     policy =>
                     {
-                        policy.WithOrigins("http://127.0.0.1:5501")
-                              .AllowAnyHeader()
-                              .AllowAnyMethod();
+                        policy.AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowAnyOrigin();
                     });
             });
 

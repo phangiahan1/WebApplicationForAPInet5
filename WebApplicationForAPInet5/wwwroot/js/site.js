@@ -3390,10 +3390,7 @@
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateFile", function () { return updateFile; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteFile", function () { return deleteFile; });
 /* harmony import */ var _models_file__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/file */ "./src/scripts/models/file.ts");
-/* harmony import */ var _models_FileAndFolderList__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/FileAndFolderList */ "./src/scripts/models/FileAndFolderList.ts");
-/* harmony import */ var _models_folder__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/folder */ "./src/scripts/models/folder.ts");
-            //create form
-
+/* harmony import */ var _models_folder__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/folder */ "./src/scripts/models/folder.ts");
 
 
 
@@ -3435,9 +3432,9 @@
                         let uploadFileName = document.getElementById('createFormInput');
 
                         if (uploadFileName) {
-                            console.log(uploadFileName);
+                            //console.log(uploadFileName);
                             const element = uploadFileName;
-                            const newFile = new _models_folder__WEBPACK_IMPORTED_MODULE_2__["Folder"](uuidv4(), uploadFileName.value, '', dateTime, "Admin", dateTime, "Admin");
+                            const newFile = new _models_folder__WEBPACK_IMPORTED_MODULE_1__["Folder"](uuidv4(), uploadFileName.value, '', dateTime, "Admin", dateTime, "Admin");
                             a.upload(newFile);
                             document.getElementById('formCreateFolder').style.display = 'none';
                         }
@@ -3482,8 +3479,7 @@
                         let uploadFileName = document.getElementById('uploadFormInput').files;
 
                         if (uploadFileName) {
-                            console.log(uploadFileName);
-
+                            //console.log(uploadFileName);
                             for (let index = 0; index < uploadFileName.length; index++) {
                                 const element = uploadFileName[index];
                                 const newFile = new _models_file__WEBPACK_IMPORTED_MODULE_0__["File"](uuidv4(), element.name, getExtension(element.name), dateTime, "Admin", dateTime, "Admin");
@@ -3495,33 +3491,20 @@
                 }
             } //update form
 
-            function showUpdateForm() {
-                const documents = new _models_FileAndFolderList__WEBPACK_IMPORTED_MODULE_1__["FileAndFolderList"]();
-                documents.data.forEach((item, index) => {
+            function showUpdateForm(a) {
+                console.log("show updtae form");
+                let tmp;
+                a.forEach((item, index) => {
                     let updateBtn = document.getElementById(`editFileBtn-${index}`);
                     updateBtn.addEventListener("click", () => {
-                        idRow = item.FileId;
+                        idRow = item.fileId;
+                        console.log(idRow);
                         document.getElementById('formUpdateFolder').style.display = 'block';
                         let tmp = item.name.split(".");
                         document.getElementById('updateFormInput').value = tmp[0];
                     });
-                }); // let updateBtn = document.getElementById(`editFileBtn-${}`);
-                // if (updateBtn) {
-                //     updateBtn.addEventListener("click", function (e) {
-                //         e.preventDefault();
-                //         var tmp: any
-                //         tmp = e.target
-                //         tmp = tmp.parentNode.parentNode.id
-                //         console.log(tmp);
-                //         var rowId = tmp;
-                //         idRow = rowId;
-                //         var data = document.getElementById(rowId)!.querySelectorAll(".row-data");
-                //         var nameFile = data[0].innerHTML.split("</i>")
-                //         var name = nameFile[1].trim().split(".")
-                //         document.getElementById('formUpdateFolder')!.style.display = 'block';
-                //         (document.getElementById('updateFormInput') as HTMLInputElement).value = name[0]
-                //     }, true)
-                // }
+                });
+                console.log("end updtae form");
             }
             function closeUpdateForm() {
                 const uploadBtn = document.getElementById("closeUpdateFormBtn");
@@ -3548,12 +3531,18 @@
                 }
             }
             function deleteFile(a) {
+                console.log("Join Delete file");
                 let deleteBtn = document.getElementById("deleteFormButton");
 
                 if (deleteBtn) {
                     deleteBtn.addEventListener("click", function (e) {
                         e.preventDefault();
-                        if (idRow) a.delete(idRow);
+
+                        if (idRow) {
+                            console.log(idRow);
+                            a.delete(idRow);
+                        }
+
                         window.location.reload();
                         document.getElementById('formUpdateFolder').style.display = 'none';
                     }, true);
@@ -3609,71 +3598,90 @@
             ;
             class FileAndFolderList {
                 constructor() {
-                    this.data = this.setData();
+                    let a = this.setData();
+                    this.data = a;
                 }
 
                 setData() {
-                    let dataInStorage = localStorage.getItem('fileListData');
+                    //let dataInStorage = localStorage.getItem('fileListData')
+                    //console.log("setData ne nhen t vo r a");
                     axios.get('https://localhost:44331/api/Files').then(function (response) {
                         // handle success
-                        console.log(response);
+                        //console.log("response");
+                        //console.log(response.data);
+                        return response.data;
                     }).catch(function (error) {
                         // handle error
                         console.log(error);
-                    }).then(function () {// always executed
                     });
-
-                    if (dataInStorage) {
-                        return JSON.parse(dataInStorage);
-                    }
-
                     return [];
+                }
+
+                getData() {
+                    //console.log("Han han get data");
+                    const a = this.data;
+                    return a;
                 }
 
                 showListForTable() {
                     let tbody = document.getElementById('tbodyDataFileList');
                     let _tr = '';
                     let index = 0;
-                    this.data.forEach(element => {
-                        let icon;
-                        if (element.extension === 'xlsx') icon = iconForFileType.xlsx; else if (element.extension === 'doc' || element.extension === 'docx') icon = iconForFileType.doc; else if (element.extension === 'jpg' || element.extension === 'jpeg' || element.extension === 'png') icon = iconForFileType.jpeg; else if (element.extension === 'pdf') icon = iconForFileType.pdf; else if (element.extension === '') icon = iconForFileType.folder; else icon = iconForFileType.file;
-                        _tr += `
-            <tr id="${element.FileId}">
-                <td data-label="File Type"><i class="fa-solid fa-${icon}"></i></td>
-                <td data-label="Name" class="row-data"><i class="fa-solid fa-pen fa-2xs" id="editFileBtn-${index}" style="color: gray;"></i><span class="new-item"><i
-                class="fa-brands fa-yelp"></i></span> ${element.name} </td>
-                <td data-label="Modified At" class="row-data td-second">${element.modifiedAt}</td>
-                <td data-label="Modified By" class="row-data td-second"> ${element.modifiedBy}</td>
-                <td data-label="Created At" class="row-data td-second">${element.createAt}</td>
-                <td data-label="Created By" class="row-data td-second"> ${element.createBy}</td>
-                <td class="hidden-style"></td>
-            </tr>
-                `;
-                        index++;
+                    let t = new Array();
+                    axios.get('https://localhost:44331/api/Files').then(response => {
+                        // handle success
+                        this.data = response.data;
+                        this.data.forEach(element => {
+                            let icon;
+                            if (element.extension === 'xlsx') icon = iconForFileType.xlsx; else if (element.extension === 'doc' || element.extension === 'docx') icon = iconForFileType.doc; else if (element.extension === 'jpg' || element.extension === 'jpeg' || element.extension === 'png') icon = iconForFileType.jpeg; else if (element.extension === 'pdf') icon = iconForFileType.pdf; else if (element.extension === '') icon = iconForFileType.folder; else icon = iconForFileType.file;
+                            _tr += `
+                    <tr id="${element.FileId}">
+                        <td data-label="File Type"><i class="fa-solid fa-${icon}"></i></td>
+                        <td data-label="Name" class="row-data"><i class="fa-solid fa-pen fa-2xs" id="editFileBtn-${index}" style="color: gray;"></i><span class="new-item"><i
+                        class="fa-brands fa-yelp"></i></span> ${element.name} </td>
+                        <td data-label="Modified At" class="row-data td-second">${element.modifiedAt}</td>
+                        <td data-label="Modified By" class="row-data td-second"> ${element.modifiedBy}</td>
+                        <td data-label="Created At" class="row-data td-second">${element.createAt}</td>
+                        <td data-label="Created By" class="row-data td-second"> ${element.createBy}</td>
+                        <td class="hidden-style"></td>
+                    </tr>
+                        `;
+                            index++;
+                        });
+                        tbody.innerHTML = _tr;
+                        console.log("Show table success");
+                        t = this.data;
+                    }).catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    }).then(function () {
+                        Object(_components_forms__WEBPACK_IMPORTED_MODULE_0__["showUpdateForm"])(t);
                     });
-                    tbody.innerHTML = _tr;
-                    setTimeout(_components_forms__WEBPACK_IMPORTED_MODULE_0__["showUpdateForm"], 1);
                 }
 
                 upload(file) {
-                    this.data.push(file);
-                    console.log(file);
-                    localStorage.setItem("fileListData", JSON.stringify(this.data));
-                    axios.post('https://localhost:44331/api/Files', file).then(function (response) {
-                        console.log(response);
-                    }).catch(function (error) {
-                        console.log(error);
+                    this.data.push(file); //localStorage.setItem("fileListData", JSON.stringify(this.data))
+
+                    axios.post('https://localhost:44331/api/Files', file).then(function (response) {//console.log("Da thanh cong: response");
+                        //console.log(response);
+                    }).catch(function (error) {//console.log(error);
                     });
                     this.showListForTable();
                 }
 
                 delete(id) {
-                    let index = this.data.findIndex(function (obj) {
-                        return obj.FileId == id;
+                    // let index = this.data.findIndex(function (obj) {
+                    //     return obj.FileId == id;
+                    // })
+                    // this.data.splice(index, 1)
+                    // let JSONdata = JSON.stringify(this.data);
+                    // localStorage.setItem('fileListData', JSONdata)
+                    console.log("id");
+                    console.log(id);
+                    axios.delete('https://localhost:44331/api/Files/' + id).then(function () {
+                        // always executed
+                        console.log("delete success");
                     });
-                    this.data.splice(index, 1);
-                    let JSONdata = JSON.stringify(this.data);
-                    localStorage.setItem('fileListData', JSONdata);
                     this.showListForTable();
                 }
 
@@ -3785,7 +3793,7 @@
                 Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["uploadFile"])(a); //update form
 
                 Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["closeUpdateForm"])();
-                Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["showUpdateForm"])();
+                Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["showUpdateForm"])([]);
                 Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["updateFile"])(a);
                 Object(_components_forms__WEBPACK_IMPORTED_MODULE_2__["deleteFile"])(a);
             });

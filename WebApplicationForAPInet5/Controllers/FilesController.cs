@@ -22,6 +22,7 @@ namespace WebApplicationForAPInet5.Controllers
         }
 
         // GET: api/Files
+        [EnableCors]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<File>>> GetFiles()
         {
@@ -100,6 +101,7 @@ namespace WebApplicationForAPInet5.Controllers
         }
 
         // DELETE: api/Files/5
+        [EnableCors]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFile(string id)
         {
