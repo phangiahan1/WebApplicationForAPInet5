@@ -30,6 +30,7 @@ namespace WebApplicationForAPInet5.Controllers
         }
 
         // GET: api/Files/5
+        [EnableCors]
         [HttpGet("{id}")]
         public async Task<ActionResult<File>> GetFile(string id)
         {
@@ -45,6 +46,7 @@ namespace WebApplicationForAPInet5.Controllers
 
         // PUT: api/Files/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [EnableCors]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFile(string id, File file)
         {
